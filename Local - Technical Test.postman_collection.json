@@ -797,7 +797,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"params\": {\r\n        \"db\": \"dcc_test\",\r\n        \"login\": \"admin\", // odoo username\r\n        \"password\": \"admin\" // odoo password\r\n    }\r\n}",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"params\": {\r\n        \"db\": \"{{db_name}}\",\r\n        \"login\": \"admin\", // odoo username\r\n        \"password\": \"admin\" // odoo password\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -805,12 +805,11 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8069/web/session/authenticate",
+					"raw": "http://{{url}}/web/session/authenticate",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
-					"port": "8069",
 					"path": [
 						"web",
 						"session",
