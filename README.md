@@ -41,7 +41,8 @@ Keep the tunnel active for API testing 🌍.
 
 4. Backend ready! Your Odoo instance is live. 🔥
 
-    ```http://localhost:8069.
+    ```bash
+    http://localhost:8069.
 
 Install the booking_apps module via Odoo Apps interface
 
