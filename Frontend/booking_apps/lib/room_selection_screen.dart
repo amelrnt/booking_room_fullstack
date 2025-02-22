@@ -46,7 +46,7 @@ class _RoomSelectionScreenState extends State<RoomSelectionScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (data['result'] != null && data['result'] is List) { // Check if result is a list and not null
+        if (data['result'] != null && data['result'] is List) {
           setState(() {
             rooms = data['result'];
           });

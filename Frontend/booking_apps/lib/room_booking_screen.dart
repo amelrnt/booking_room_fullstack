@@ -56,7 +56,6 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['result'] != null && data['result'] is List) {
-          // Check if result is a list and not null
           setState(() {
             employees = data['result'];
           });
@@ -85,7 +84,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
     });
     final url = Uri.parse(dotenv.env['url']!);
     final headers = {'Content-Type': 'application/json'};
-    final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate!); // Format date
+    final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate!); 
 
     final body = jsonEncode({
       "jsonrpc": "2.0",
@@ -112,7 +111,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
     try {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
-        Navigator.pop(context); // Go back to room details on success
+        Navigator.pop(context); 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Room booked successfully'))); // Show success message
       } else {
         print('Error booking room: ${response.statusCode}');
@@ -123,7 +122,7 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
       _showErrorDialog(context, 'An error occurred');
     } finally {
       setState(() {
-        _isBooking = false; // Set booking state to false
+        _isBooking = false;
       });
     }
   }
@@ -187,19 +186,16 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
               ],
             ),
             SizedBox(height: 20),
-            // Other booking form fields (e.g., time, description) can be added here
             TextFormField(
               decoration: InputDecoration(labelText: 'Description'),
             ),
             SizedBox(height: 20),
-            // Employee Dropdown
-            DropdownButtonFormField<int>(
-              // Use int for ID
+            DropdownButtonFormField<int>( 
               decoration: InputDecoration(labelText: 'Employee'),
               value: _selectedEmployeeId,
               items: employees
                   .map((employee) => DropdownMenuItem<int>(
-                        value: employee['id'] as int, // Cast to int
+                        value: employee['id'] as int, 
                         child: Text(employee['name']),
                       ))
                   .toList(),

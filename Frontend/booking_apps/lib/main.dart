@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int _selectedIndex = 0; // Track selected tab
+  int _selectedIndex = 0;
 
   static List _widgetOptions = [
     RoomSelectionScreen(),

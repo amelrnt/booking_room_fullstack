@@ -47,7 +47,6 @@ class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
             SizedBox(height: 20),
             if (bookings.isNotEmpty)
               Expanded(
-                // Use Expanded to allow scrolling
                 child: ListView.builder(
                   itemCount: bookings.length,
                   itemBuilder: (context, index) {
@@ -73,7 +72,7 @@ class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     _updateBookingState(booking['id'],
-                                        'on_going'); // Pass booking ID
+                                        'on_going');
                                   },
                                   child: Text('Set to On Going'),
                                 ),
@@ -83,7 +82,7 @@ class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     _updateBookingState(booking['id'],
-                                        'done'); // Pass booking ID
+                                        'done');
                                   },
                                   child: Text('Set to Done'),
                                 ),
@@ -203,7 +202,6 @@ class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
     try {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
-        // Refresh bookings after update
         _fetchBookings(_bookingName);
       } else {
         print('Error updating booking state: ${response.statusCode}');
