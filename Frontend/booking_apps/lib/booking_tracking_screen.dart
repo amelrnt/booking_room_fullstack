@@ -12,8 +12,6 @@ class BookingTrackingScreen extends StatefulWidget {
 
 class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
   String _bookingName = '';
-  bool _bookingFound = false;
-  String _bookingState = 'draft';
   List<dynamic> bookings = [];
 
   @override
@@ -38,7 +36,7 @@ class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _bookingFound = _bookingName.isNotEmpty;
+                    _fetchBookings(_bookingName);
                   });
                 },
                 child: Text('Search'),
@@ -71,8 +69,8 @@ class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
                               Center(
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    _updateBookingState(booking['id'],
-                                        'on_going');
+                                    _updateBookingState(
+                                        booking['id'], 'on_going');
                                   },
                                   child: Text('Set to On Going'),
                                 ),
@@ -81,8 +79,7 @@ class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
                               Center(
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    _updateBookingState(booking['id'],
-                                        'done');
+                                    _updateBookingState(booking['id'], 'done');
                                   },
                                   child: Text('Set to Done'),
                                 ),
@@ -120,7 +117,7 @@ class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
             ["name", "=", bookingName]
           ],
           [
-            "id", 
+            "id",
             "name",
             "booking_date",
             "room_name",
