@@ -1,0 +1,13 @@
+[options]
+; This is the password that allows database operations:
+; admin_passwd = admin
+; db_host = False
+; db_port = False
+; db_user = odoo
+; db_password = False
+;limit_time_cpu = 100000
+;limit_time_real = 100000
+; limit_memory_hard = 0
+;limit-time-real-cron = 0
+; db_name = db_name
+; addons_path = path

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_room_book_form" model="ir.ui.view">
+    <field name="name">room.booking.form</field>
+    <field name="model">room.booking</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="set_booking_on_going" string='Approve' type='object' class="btn-primary" invisible="state != 'draft' "/>
+          <button name="set_booking_done" string='Done' type='object' class="btn-primary" invisible="state != 'on_going' "/>
+          <field name="state" widget="statusbar" statusbar_visible="draft,on_going,done"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <h1>
+              <field name="name" placeholder="Nama Booking" readonly="1"/>
+            </h1>
+          </div>
+          <group>
+            <field name="conference_room_id"/>
+            <field name="employee_id"/>
+            <field name="booking_date"/>
+            <field name="description"/>
+          </group>
+        </sheet>
+        <div class="oe_chatter">
+          <field name="message_follower_ids" widget="mail_followers" />
+          <field name="activity_ids" widget="mail_activity" />
+          <field name="message_ids" widget="mail_thread" />
+        </div>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_room_book_tree" model="ir.ui.view">
+    <field name="name">room.booking.tree</field>
+    <field name="model">room.booking</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name" />
+        <field name="conference_room_id"/>
+        <field name="employee_id"/>
+        <field name="booking_date"/>
+        <field name="state" />
+        <field name="description"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="room_search_book_view" model="ir.ui.view">
+    <field name="name">room.search</field>
+    <field name="model">room.booking</field>
+    <field name="arch" type="xml">
+      <search string="Conference Room">
+        <field name="name" />
+        <field name="conference_room_id"/>
+        <field name="employee_id"/>
+        <field name="booking_date"/>
+        <field name="state" />
+        <field name="description"/>
+      </search>
+    </field>
+  </record>
+
+  <record id="action_room_booking" model="ir.actions.act_window">
+    <field name="name">Booking Ruangan</field>
+    <field name="res_model">room.booking</field>
+    <field name="view_mode">tree,form</field>
+    <field name="view_id" ref="view_room_book_tree" />
+    <field name="search_view_id" ref="room_search_book_view"/>
+  </record>
+
+  <menuitem id="menu_booking_room" name="Booking" action="action_room_booking" parent="menu_room_booking_root" sequence="40" />
+</odoo>
