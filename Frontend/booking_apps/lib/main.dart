@@ -37,7 +37,8 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Scaffold(body: Center(
+      home: Scaffold(
+        body: Center(
           child: _widgetOptions.elementAt(_selectedIndex),
         ),
         bottomNavigationBar: BottomNavigationBar(
@@ -55,7 +56,6 @@ class _MyAppState extends State<MyApp> {
           onTap: _onItemTapped,
         ),
       ),
-    
     );
   }
 }

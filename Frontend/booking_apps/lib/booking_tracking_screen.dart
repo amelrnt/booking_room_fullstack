@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+
+import 'api_service.dart';
+import 'common_widgets.dart';
 
 class BookingTrackingScreen extends StatefulWidget {
   @override
@@ -11,6 +10,7 @@ class BookingTrackingScreen extends StatefulWidget {
 }
 
 class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
+  final ApiService _apiService = ApiService();
   String _bookingName = '';
   List<dynamic> bookings = [];
 
@@ -99,114 +99,24 @@ class _BookingTrackingScreenState extends State<BookingTrackingScreen> {
   }
 
   Future<void> _fetchBookings(String bookingName) async {
-    final url = Uri.parse(dotenv.env['url']!);
-    final headers = {'Content-Type': 'application/json'};
-    final body = jsonEncode({
-      "jsonrpc": "2.0",
-      "method": "call",
-      "params": {
-        "service": "object",
-        "method": "execute",
-        "args": [
-          dotenv.env['db_name'],
-          dotenv.env['uid'], // TODO: get from login
-          dotenv.env['api_key'], // TODO: get from login
-          "room.booking",
-          "search_read",
-          [
-            ["name", "=", bookingName]
-          ],
-          [
-            "id",
-            "name",
-            "booking_date",
-            "room_name",
-            "employee_name",
-            "state",
-            "description"
-          ]
-        ]
-      }
-    });
-
     try {
-      final response = await http.post(url, headers: headers, body: body);
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['result'] != null && data['result'] is List) {
-          setState(() {
-            bookings = data['result'];
-          });
-        } else {
-          print('Invalid booking data: $data');
-          _showErrorDialog(context, 'Failed to fetch bookings: Invalid data');
-        }
-      } else {
-        print('Error: ${response.statusCode}');
-        _showErrorDialog(context, 'Failed to fetch bookings');
-      }
+      bookings = await _apiService.getBookings(bookingName);
+      setState(() {});
     } catch (e) {
-      print('Error: $e');
-      _showErrorDialog(context, 'An error occurred');
+      showErrorDialog(context, 'Failed to fetch bookings: $e');
     }
   }
 
-  // TODO: move to commmon to reduce duplication
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _updateBookingState(int bookingId, String newState) async {
-    final url = Uri.parse(dotenv.env['url']!);
-    final headers = {'Content-Type': 'application/json'};
-    final method = newState == 'on_going'
-        ? 'api_set_booking_on_going'
-        : 'api_set_booking_done';
-
-    final body = jsonEncode({
-      "jsonrpc": "2.0",
-      "method": "call",
-      "params": {
-        "service": "object",
-        "method": "execute",
-        "args": [
-          dotenv.env['db_name'],
-          dotenv.env['uid'],
-          dotenv.env['api_key'],
-          "room.booking",
-          method,
-          [bookingId]
-        ]
-      }
-    });
-
     try {
-      final response = await http.post(url, headers: headers, body: body);
-      if (response.statusCode == 200) {
-        _fetchBookings(_bookingName);
+      if (newState == 'on_going') {
+        await _apiService.setBookingOnGoing(bookingId);
       } else {
-        print('Error updating booking state: ${response.statusCode}');
-        _showErrorDialog(context, 'Failed to update booking state');
+        await _apiService.setBookingDone(bookingId);
       }
+      _fetchBookings(_bookingName);
     } catch (e) {
-      print('Error: $e');
-      _showErrorDialog(context, 'An error occurred');
+      showErrorDialog(context, 'Failed to update booking: $e');
     }
   }
 }

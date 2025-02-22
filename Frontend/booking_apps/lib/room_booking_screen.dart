@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+
+import 'api_service.dart';
+import 'common_widgets.dart';
 
 class RoomBookingScreen extends StatefulWidget {
   final int roomId;
@@ -16,11 +15,12 @@ class RoomBookingScreen extends StatefulWidget {
 }
 
 class _RoomBookingScreenState extends State<RoomBookingScreen> {
+  final ApiService _apiService = ApiService();
   DateTime? _selectedDate;
-  int? _selectedEmployeeId; 
+  int? _selectedEmployeeId;
   List<dynamic> employees = [];
-  String _description = '';
   bool _isBooking = false;
+  String _description = "";
 
   @override
   void initState() {
@@ -29,123 +29,43 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
   }
 
   Future<void> _fetchEmployees() async {
-    final url =
-        Uri.parse(dotenv.env['url']!);
-    final headers = {'Content-Type': 'application/json'};
-    final body = jsonEncode({
-      "jsonrpc": "2.0",
-      "method": "call",
-      "params": {
-        "service": "object",
-        "method": "execute",
-        "args": [
-          dotenv.env['db_name'],
-          dotenv.env['uid'], //TODO: get from login
-          dotenv.env['api_key'], //TODO: get from login
-          "hr.employee",
-          "search_read",
-          [],
-          ["id", "name"]
-        ]
-      }
-    });
-
     try {
-      final response = await http.post(url, headers: headers, body: body);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['result'] != null && data['result'] is List) {
-          setState(() {
-            employees = data['result'];
-          });
-        } else {
-          print('Invalid employee data: $data');
-          _showErrorDialog(context, 'Failed to fetch employees: Invalid data');
-        }
-      } else {
-        print('Error: ${response.statusCode}');
-        _showErrorDialog(context, 'Failed to fetch employees');
-      }
+      employees = await _apiService.getEmployees();
+      setState(() {});
     } catch (e) {
-      print('Error: $e');
-      _showErrorDialog(context, 'An error occurred');
+      showErrorDialog(context, 'Failed to fetch employees: $e');
     }
   }
 
   Future<void> _bookRoom() async {
     if (_selectedDate == null || _selectedEmployeeId == null) {
-      _showErrorDialog(context, 'Please select date and employee');
+      showErrorDialog(context, 'Please select date and employee');
       return;
     }
 
     setState(() {
       _isBooking = true;
     });
-    final url = Uri.parse(dotenv.env['url']!);
-    final headers = {'Content-Type': 'application/json'};
-    final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate!); 
-
-    final body = jsonEncode({
-      "jsonrpc": "2.0",
-      "method": "call",
-      "params": {
-        "service": "object",
-        "method": "execute",
-        "args": [
-          dotenv.env['db_name'],
-          dotenv.env['uid'],
-          dotenv.env['api_key'],
-          "room.booking",
-          "create",
-          {
-            "conference_room_id": widget.roomId,
-            "employee_id": _selectedEmployeeId,
-            "booking_date": formattedDate,
-            "description": _description,
-          }
-        ]
-      }
-    });
+    final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate!);
 
     try {
-      final response = await http.post(url, headers: headers, body: body);
-      if (response.statusCode == 200) {
-        Navigator.pop(context); 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Room booked successfully'))); // Show success message
-      } else {
-        print('Error booking room: ${response.statusCode}');
-        _showErrorDialog(context, 'Failed to book room');
-      }
+      await _apiService.createBooking({
+        "conference_room_id": widget.roomId,
+        "employee_id": _selectedEmployeeId,
+        "booking_date": formattedDate,
+        "description": _description,
+      });
+
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Room booked successfully')));
     } catch (e) {
-      print('Error: $e');
-      _showErrorDialog(context, 'An error occurred');
+      showErrorDialog(context, 'Failed to book room: $e');
     } finally {
       setState(() {
         _isBooking = false;
       });
     }
-  }
-
-
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -190,12 +110,12 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
               decoration: InputDecoration(labelText: 'Description'),
             ),
             SizedBox(height: 20),
-            DropdownButtonFormField<int>( 
+            DropdownButtonFormField<int>(
               decoration: InputDecoration(labelText: 'Employee'),
               value: _selectedEmployeeId,
               items: employees
                   .map((employee) => DropdownMenuItem<int>(
-                        value: employee['id'] as int, 
+                        value: employee['id'] as int,
                         child: Text(employee['name']),
                       ))
                   .toList(),
@@ -208,12 +128,12 @@ class _RoomBookingScreenState extends State<RoomBookingScreen> {
             SizedBox(height: 20),
             Center(
               // Center the button
-              child:  ElevatedButton(
-                  onPressed: _isBooking ? null : _bookRoom,
-                  child: _isBooking
-                      ? CircularProgressIndicator()
-                      : Text('Book Room'),
-                ),
+              child: ElevatedButton(
+                onPressed: _isBooking ? null : _bookRoom,
+                child: _isBooking
+                    ? CircularProgressIndicator()
+                    : Text('Book Room'),
+              ),
             ),
           ],
         ),
