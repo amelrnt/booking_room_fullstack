@@ -18,8 +18,8 @@ Update variables (e.g., API_URL, Odoo credentials, tunneling URL).
 3. **Run the App** 🎉
 Start the Flutter development server:
 
-bash
-flutter run
+    ```bash
+    flutter run
 
 ## **Backend (Odoo) Setup** ⚙️
 
@@ -30,19 +30,18 @@ Open your Odoo configuration file (odoo.conf).
 2. **Start Odoo Server**
 Run Odoo with:
 
-bash
-./odoo-bin --config=odoo.conf
-Access Odoo atExpose for Testing
+    ```bash
+    ./odoo-bin --config=odoo.conf
 
-3. Use tunneling (e.g., ngrok) to make 
-bash
 
-ngrok http 8069  # Odoo’s default port is 8069
+3. Use tunneling (e.g., ngrok) to make the backend accessible
+      ```bash
+      ngrok http 8069  # Odoo’s default port is 8069
 Keep the tunnel active for API testing 🌍.
 
 4. Backend ready! Your Odoo instance is live. 🔥
 
- http://localhost:8069.
+    ```http://localhost:8069.
 
 Install the booking_apps module via Odoo Apps interface
 
