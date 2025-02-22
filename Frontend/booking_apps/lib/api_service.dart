@@ -4,10 +4,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = dotenv.env['url']!;
+  final String baseUrl = dotenv.env['url']!; 
   final String dbName = dotenv.env['db_name']!;
-  final int uid = dotenv.env['uid']! as int;
-  final String apiKey = dotenv.env['api_key']!;
+  final int uid = dotenv.env['uid']! as int; //TODO: get from auth
+  final String apiKey = dotenv.env['api_key']!; //TODO: if session is implemented, remove this
 
   Future<dynamic> _makeApiCall(String model, String method,
       [List? args, Map? kwargs]) async {
